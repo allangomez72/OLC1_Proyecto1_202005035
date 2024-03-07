@@ -4,15 +4,30 @@
  */
 package proyecto1_compi;
 
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextPane;
+import Analizador.LexicalAnalysis;
+import Analizador.parser;
+import java.io.BufferedReader;
+import java.io.StringReader;
+import Errores.Exception_;
+import java.util.ArrayList;
+import Metodos.Recorrido;
+
 /**
  *
  * @author Allan
  */
 public class Ventana extends javax.swing.JFrame {
-
+    
+    ArrayList<Exception_> errores = new ArrayList();
+    ArrayList<Recorrido> tokens = new ArrayList();
     /**
      * Creates new form Ventana
      */
+    private int contadorPestanas = 1;
+    
     public Ventana() {
         initComponents();
     }
@@ -25,18 +40,18 @@ public class Ventana extends javax.swing.JFrame {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        jTabbedPane2 = new javax.swing.JTabbedPane();
+        nuevoTabbedPane = new javax.swing.JTabbedPane();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTextPane1 = new javax.swing.JTextPane();
+        TextEntrada = new javax.swing.JTextPane();
         jPanel2 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
+        ConsolaSalida = new javax.swing.JTextArea();
         jLabel1 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
-        jButton3 = new javax.swing.JButton();
+        buttonEjecutar = new javax.swing.JButton();
         jMenuBar2 = new javax.swing.JMenuBar();
         ArchivoMenu = new javax.swing.JMenu();
         NuevoButton = new javax.swing.JMenuItem();
@@ -50,9 +65,9 @@ public class Ventana extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jScrollPane2.setViewportView(jTextPane1);
+        jScrollPane2.setViewportView(TextEntrada);
 
-        jTabbedPane2.addTab("tab1", jScrollPane2);
+        nuevoTabbedPane.addTab("Archivo", jScrollPane2);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -69,9 +84,9 @@ public class Ventana extends javax.swing.JFrame {
 
         jButton2.setText("Siguiente");
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane1.setViewportView(jTextArea1);
+        ConsolaSalida.setColumns(20);
+        ConsolaSalida.setRows(5);
+        jScrollPane1.setViewportView(ConsolaSalida);
 
         jLabel1.setText("Consola");
 
@@ -79,7 +94,12 @@ public class Ventana extends javax.swing.JFrame {
 
         jLabel5.setText("Grafica");
 
-        jButton3.setText("Ejecutar");
+        buttonEjecutar.setText("Ejecutar");
+        buttonEjecutar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonEjecutarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -90,8 +110,8 @@ public class Ventana extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jTabbedPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 368, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(nuevoTabbedPane, javax.swing.GroupLayout.PREFERRED_SIZE, 368, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(buttonEjecutar, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGap(56, 56, 56)
@@ -121,13 +141,13 @@ public class Ventana extends javax.swing.JFrame {
                     .addComponent(jLabel5))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jTabbedPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 216, Short.MAX_VALUE)
+                    .addComponent(nuevoTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 216, Short.MAX_VALUE)
                     .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(16, 16, 16)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
                     .addComponent(jButton2)
-                    .addComponent(jButton3))
+                    .addComponent(buttonEjecutar))
                 .addGap(18, 18, 18)
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -138,9 +158,19 @@ public class Ventana extends javax.swing.JFrame {
         ArchivoMenu.setText("Archivo");
 
         NuevoButton.setText("Nuevo Archivo");
+        NuevoButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                NuevoButtonActionPerformed(evt);
+            }
+        });
         ArchivoMenu.add(NuevoButton);
 
         AbrirButton.setText("Abrir Archivo");
+        AbrirButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                AbrirButtonActionPerformed(evt);
+            }
+        });
         ArchivoMenu.add(AbrirButton);
 
         GuardarButton.setText("Guardar");
@@ -180,6 +210,81 @@ public class Ventana extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void NuevoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_NuevoButtonActionPerformed
+        nuevoTabbedPane = new JTabbedPane();
+        TextEntrada = new JTextPane();
+        nuevoTabbedPane.addTab("Pestaña " + contadorPestanas, new JScrollPane(TextEntrada));
+        jPanel2.add(nuevoTabbedPane);
+        contadorPestanas++;
+        jPanel2.revalidate();
+        jPanel2.repaint();
+        System.out.println("Se supone ya sali");
+    }//GEN-LAST:event_NuevoButtonActionPerformed
+
+    private void AbrirButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AbrirButtonActionPerformed
+        // TODO add your handling code here:
+        JTabbedPane nuevoTabbedPane = new JTabbedPane();
+        JTextPane nuevoTextPane = new JTextPane();
+        nuevoTabbedPane.addTab("Pestaña " + contadorPestanas, new JScrollPane(nuevoTextPane));
+        jPanel1.add(nuevoTabbedPane);
+        contadorPestanas++;
+        jPanel1.revalidate();
+        jPanel1.repaint();
+        
+    }//GEN-LAST:event_AbrirButtonActionPerformed
+
+    private void buttonEjecutarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonEjecutarActionPerformed
+        Analizador.LexicalAnalysis scan;
+        Analizador.parser parse;
+        try {
+            // realizar el analisis lexico con el scanner
+            scan = new LexicalAnalysis(new BufferedReader(new StringReader(TextEntrada.getText())));
+            // sintactico con el parser
+            parse = new parser(scan);
+            parse.parse();
+            errores.addAll(scan.Errores);
+            errores.addAll(parse.getErrores());
+            tokens.addAll(scan.Lexemas);
+
+           /* String result = "";
+            for (int i = 0; i < parse.salidas.size(); i++) {
+                result += parse.salidas.get(i) + '\n';
+            }
+            SalidaText.setText(result);*/
+
+            // SalidaText.setText("Analisis realizado correcatamente");
+            // System.out.println("Analisis realizado correctamente");
+            ConsolaSalida.setEditable(false);
+            // generar reportes de errores lexicos
+
+        } catch (Exception ex) {
+            System.out.println("Error: " + ex.getMessage());
+        }
+    }//GEN-LAST:event_buttonEjecutarActionPerformed
+
+        private void abrirNuevoTab() {
+        JTabbedPane nuevoTabbedPane = new JTabbedPane();
+        JTextPane nuevoTextPane = new JTextPane();
+
+        // Aquí podrías abrir un archivo y cargar su contenido en nuevoTextPane
+
+        nuevoTabbedPane.addTab("Pestaña " + contadorPestanas, new JScrollPane(nuevoTextPane));
+        jPanel1.add(nuevoTabbedPane);
+        contadorPestanas++;
+        jPanel1.revalidate();
+        jPanel1.repaint();
+    }
+
+    private void agregarNuevoTab() {
+        JTabbedPane nuevoTabbedPane = new JTabbedPane();
+        JTextPane nuevoTextPane = new JTextPane();
+        nuevoTabbedPane.addTab("Pestaña " + contadorPestanas, new JScrollPane(nuevoTextPane));
+        jPanel1.add(nuevoTabbedPane);
+        contadorPestanas++;
+        jPanel1.revalidate();
+        jPanel1.repaint();
+    }
+    
     /**
      * @param args the command line arguments
      */
@@ -221,13 +326,15 @@ public class Ventana extends javax.swing.JFrame {
     private javax.swing.JMenuItem ButtonErrores;
     private javax.swing.JMenuItem ButtonTS;
     private javax.swing.JMenuItem ButtonTokens;
+    private javax.swing.JTextArea ConsolaSalida;
     private javax.swing.JMenuItem DeleteButton;
     private javax.swing.JMenuItem GuardarButton;
     private javax.swing.JMenuItem NuevoButton;
     private javax.swing.JMenu ReportesMenu;
+    private javax.swing.JTextPane TextEntrada;
+    private javax.swing.JButton buttonEjecutar;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -236,8 +343,6 @@ public class Ventana extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTabbedPane jTabbedPane2;
-    private javax.swing.JTextArea jTextArea1;
-    private javax.swing.JTextPane jTextPane1;
+    private javax.swing.JTabbedPane nuevoTabbedPane;
     // End of variables declaration//GEN-END:variables
 }

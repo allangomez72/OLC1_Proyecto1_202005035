@@ -1,0 +1,155 @@
+
+package Analizador;
+import java_cup.runtime.*;
+import Errores.Exception_;
+import Metodos.OperacionesAritmeticas;
+import Metodos.Mapas;
+import java.util.ArrayList;
+
+parser code 
+{:
+
+    //lista de errores
+    public ArrayList<Exception_> Errores = new ArrayList();
+    
+    /**
+     * Método al que se llama automáticamente ante algún error sintactico.
+    **/ 
+    public void syntax_error(Symbol s){
+        Errores.add(new Exception_("Sintáctico", "Error de sintaxis detectado. Se detectó: " + s.value, s.left + "", s.right + ""));
+    }
+    /**
+     * Método al que se llama automáticamente ante algún error sintáctico 
+     * en el que ya no es posible una recuperación de errores.
+    **/ 
+    public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{ 
+        System.out.println("Error sintactico irrecuperable en la Línea " + (s.left)+ " Columna "+s.right+". Componente " + s.value + " no reconocidoo."); 
+    }
+
+    public ArrayList<Exception_> getErrores(){
+        return Errores;
+    }
+
+:}
+
+
+/* Terminales (tokens devueltos por el escáner) */
+terminal String PROGRAM, END, VAR, CONSOLE, PRINT, CHAR, DOUBLE, ARREGLO;
+terminal String SUMA, RESTA, MULTIPLICACION, DIVISION, MODULO;
+terminal String MEDIA, MEDIANA, MODA, VARIANZA, MAX, MIN, COLUMN, GRAPH, PRBAR, PRPIE, PRLINE, EXEC;
+terminal String TITULO, LABEL, VALUES, EJE,PRX, PRY, HISTOGRAM;
+terminal String DOSPUNTOS, PUNTOCOMA, FLECHA, CORABRE, CORCIERRA, ARROBA, PARABRE, PARCIERRA, COMA, IGUAL;
+terminal String DECIMAL, ID, CADENA;
+
+/*NO TERMINALES NOW*/
+non terminal INICIO,INSTRUCTIONS, INSTRUCTION,SENTENCE,STATEMENT_VARIABLES,TYPE,EXPRESSION,STATEMENT_PRINT,CONCATENATION,ARREGLO_DECLARATION,ARREGLO_TYPE,LIST_VALUES;
+
+/* The grammar rules */
+start with INICIO;
+INICIO ::= INSTRUCTIONS;
+
+INSTRUCTIONS ::= PROGRAM INSTRUCTION END PROGRAM
+        | error END PROGRAM;
+/*LO DIVIDI EN MUCHAS SENTENCIAS PARA QUE SEA RECURSIVO POR CADA INSTRUCCION PUEDE VENIR UNA SENTENCIA*/
+INSTRUCTION ::= INSTRUCTION SENTENCE
+        | SENTENCE;
+
+/*SENTENCIA PUEDE DECLAR VARIABLES, MOSTRAR POR UN PRINT, DECLARAR LOS ARREGLOS Y AUN FALTA*/
+SENTENCE ::= STATEMENT_VARIABLES
+        |STATEMENT_PRINT
+        |ARREGLO_DECLARATION;
+
+STATEMENT_VARIABLES ::=  VAR DOSPUNTOS TYPE  DOSPUNTOS DOSPUNTOS ID:itentifier FLECHA EXPRESSION:value_ END PUNTOCOMA
+        {:
+                Mapas.setVariable(itentifier.toString(), value_);
+                System.out.println("Variable declarada: " + itentifier + " con valor: " + value_);
+        :};
+
+TYPE ::= CHAR CORABRE CORCIERRA
+        {:
+                System.out.println("Tipo de dato char");
+        :}
+        | DOUBLE 
+        {:
+                System.out.println("Tipo de dato double");
+        :};
+
+EXPRESSION ::= DECIMAL:deci {: RESULT = deci; :}
+        |ID:id {:
+                Object auxMapa = null;
+                auxMapa = Mapas.getVariable(id.toString()); 
+                if (auxMapa != null) {
+                        RESULT = auxMapa; 
+                } else {
+                        System.out.println("Variable no declarada");
+                }
+        :}
+        |CADENA:cad {: RESULT = cad; :}
+        |SUMA PARABRE EXPRESSION:primero COMA EXPRESSION:segundo PARCIERRA }
+        {: 
+                OperacionesAritmeticas operacion = new OperacionesAritmeticas();
+                System.out.println("Suma: " + operacion.suma(primero, segundo));
+                RESULT = operacion.suma(primero, segundo);
+        :}
+        |RESTA PARABRE EXPRESSION:primero COMA EXPRESSION:segundo PARCIERRA
+        {:
+                OperacionesAritmeticas operacion = new OperacionesAritmeticas();
+                System.out.println("Resta: " + operacion.resta(primero, segundo));
+                RESULT = operacion.resta(primero, segundo);
+        :}
+
+        |MULTIPLICACION PARABRE EXPRESSION:primero COMA EXPRESSION:segundo PARCIERRA
+        {:
+                OperacionesAritmeticas operacion = new OperacionesAritmeticas();
+                System.out.println("Multiplicación: " + operacion.multiplicacion(primero, segundo));
+                RESULT = operacion.multiplicacion(primero, segundo);
+        :}
+        |DIVISION PARABRE EXPRESSION:primero COMA EXPRESSION:segundo PARCIERRA
+        {:
+                OperacionesAritmeticas operacion = new OperacionesAritmeticas();
+                System.out.println("División: " + operacion.division(primero, segundo));
+                RESULT = operacion.division(primero, segundo);
+        :}
+        |MODULO PARABRE EXPRESSION:primero COMA EXPRESSION:segundo PARCIERRA
+        {:
+                OperacionesAritmeticas operacion = new OperacionesAritmeticas();
+                System.out.println("Módulo: " + operacion.modulo(primero, segundo));
+                RESULT = operacion.modulo(primero, segundo);
+        :}; 
+
+STATEMENT_PRINT ::= CONSOLE DOSPUNTOS DOSPUNTOS PRINT IGUAL CONCATENATION:concat END PUNTOCOMA
+        {:
+                System.out.println("Imprimir: " + concat);
+        :};
+
+CONCATENATION ::= EXPRESSION:exp COMA CONCATENATION:conca
+        {:
+                RESULT = exp + " " + conca;
+        :}
+        | EXPRESSION:ex {: RESULT= ex.toString(); :};
+
+
+ARREGLO_DECLARATION ::= ARREGLO DOSPUNTOS ARREGLO_TYPE DOSPUNTOS DOSPUNTOS ARROBA ID:id FLECHA CORABRE LIST_VALUES:list CORCIERRA END PUNTOCOMA
+        {:
+            Mapas.setArreglo(id.toString(),(ArrayList<Object>) list);
+            System.out.println("Arreglo declarado: " + id + " con valores: " + list);
+        :};
+
+
+ARREGLO_TYPE ::= TYPE CORABRE CORCIERRA
+        | TYPE;
+
+LIST_VALUES ::= EXPRESSION:expr COMA LIST_VALUES:list
+        {:
+        //con esto me aseguro que todo sea de tipo Objetct y no haya problema luego
+            ArrayList<Object> newList = new ArrayList<>();
+            newList.addAll((ArrayList<Object>)list); // Copiamos la lista actual
+            newList.add(expr); // Agregamos el nuevo elemento
+            RESULT = newList; // Asignamos la nueva lista como resultado
+        :}
+        | EXPRESSION:exp 
+        {:
+            ArrayList<Object> newList = new ArrayList<>();
+            newList.add(exp); // Creamos una nueva lista con el único elemento
+            RESULT = newList; // Asignamos la nueva lista como resultado
+        :};
