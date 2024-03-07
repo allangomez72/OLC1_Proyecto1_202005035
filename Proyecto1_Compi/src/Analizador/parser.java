@@ -35,7 +35,7 @@ public class parser extends java_cup.runtime.lr_parser {
   /** Production table. */
   protected static final short _production_table[][] = 
     unpackFromStrings(new String[] {
-    "\000\034\000\002\002\004\000\002\002\003\000\002\003" +
+    "\000\037\000\002\002\004\000\002\002\003\000\002\003" +
     "\006\000\002\003\005\000\002\004\004\000\002\004\003" +
     "\000\002\005\003\000\002\005\003\000\002\005\003\000" +
     "\002\006\014\000\002\007\003\000\002\007\003\000\002" +
@@ -43,7 +43,8 @@ public class parser extends java_cup.runtime.lr_parser {
     "\010\000\002\010\010\000\002\010\010\000\002\010\010" +
     "\000\002\010\010\000\002\011\012\000\002\012\005\000" +
     "\002\012\003\000\002\013\017\000\002\014\005\000\002" +
-    "\014\003\000\002\015\005\000\002\015\003" });
+    "\014\003\000\002\015\005\000\002\015\003\000\002\016" +
+    "\014\000\002\017\004\000\002\017\003" });
 
   /** Access to production table. */
   public short[][] production_table() {return _production_table;}
@@ -601,6 +602,7 @@ class CUP$parser$actions {
 		int listright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		Object list = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		
+        //con esto me aseguro que todo sea de tipo Objetct y no haya problema luego
             ArrayList<Object> newList = new ArrayList<>();
             newList.addAll((ArrayList<Object>)list); // Copiamos la lista actual
             newList.add(expr); // Agregamos el nuevo elemento
@@ -623,6 +625,60 @@ class CUP$parser$actions {
             RESULT = newList; // Asignamos la nueva lista como resultado
         
               CUP$parser$result = parser.getSymbolFactory().newSymbol("LIST_VALUES",11, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
+            }
+          return CUP$parser$result;
+
+          /*. . . . . . . . . . . . . . . . . . . .*/
+          case 28: // PRINT_ARRAY ::= CONSOLE DOSPUNTOS DOSPUNTOS COLUMN IGUAL EXPRESSION FLECHA TYPE_PRINT_ARRAY END PUNTOCOMA 
+            {
+              Object RESULT =null;
+		int expleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)).left;
+		int expright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)).right;
+		Object exp = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-4)).value;
+		int arrayleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
+		int arrayright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
+		Object array = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
+		
+                // Castear TYPE_PRINT_ARRAY a un arreglo
+                Object[] expArray = (Object[]) array;
+                System.out.println("Imprimir arreglo: " + array);
+                System.out.println("--------------");
+                System.out.println(exp.toString());
+                System.out.println("--------------");
+                // Imprimir cada elemento del array en una nueva línea
+                for (int i = 0; i < expArray.length; i++) {
+                 System.out.println(expArray[i]);
+                }
+        
+              CUP$parser$result = parser.getSymbolFactory().newSymbol("PRINT_ARRAY",12, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-9)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
+            }
+          return CUP$parser$result;
+
+          /*. . . . . . . . . . . . . . . . . . . .*/
+          case 29: // TYPE_PRINT_ARRAY ::= ARROBA ID 
+            {
+              Object RESULT =null;
+		int idleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
+		int idright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
+		String id = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+		
+                RESULT = Mapas.getArreglo(id.toString());
+        
+              CUP$parser$result = parser.getSymbolFactory().newSymbol("TYPE_PRINT_ARRAY",13, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
+            }
+          return CUP$parser$result;
+
+          /*. . . . . . . . . . . . . . . . . . . .*/
+          case 30: // TYPE_PRINT_ARRAY ::= LIST_VALUES 
+            {
+              Object RESULT =null;
+		int listleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
+		int listright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
+		Object list = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+		
+                RESULT = list;
+        
+              CUP$parser$result = parser.getSymbolFactory().newSymbol("TYPE_PRINT_ARRAY",13, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
 

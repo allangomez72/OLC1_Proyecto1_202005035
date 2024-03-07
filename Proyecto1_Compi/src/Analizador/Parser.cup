@@ -43,6 +43,7 @@ terminal String DECIMAL, ID, CADENA;
 
 /*NO TERMINALES NOW*/
 non terminal INICIO,INSTRUCTIONS, INSTRUCTION,SENTENCE,STATEMENT_VARIABLES,TYPE,EXPRESSION,STATEMENT_PRINT,CONCATENATION,ARREGLO_DECLARATION,ARREGLO_TYPE,LIST_VALUES;
+non terminal PRINT_ARRAY,TYPE_PRINT_ARRAY;
 
 /* The grammar rules */
 start with INICIO;
@@ -65,7 +66,7 @@ STATEMENT_VARIABLES ::=  VAR DOSPUNTOS TYPE  DOSPUNTOS DOSPUNTOS ID:itentifier F
                 System.out.println("Variable declarada: " + itentifier + " con valor: " + value_);
         :};
 
-TYPE ::= CHAR CORABRE CORCIERRA
+TYPE ::= CHAR
         {:
                 System.out.println("Tipo de dato char");
         :}
@@ -152,4 +153,27 @@ LIST_VALUES ::= EXPRESSION:expr COMA LIST_VALUES:list
             ArrayList<Object> newList = new ArrayList<>();
             newList.add(exp); // Creamos una nueva lista con el único elemento
             RESULT = newList; // Asignamos la nueva lista como resultado
+        :};
+
+PRINT_ARRAY ::= CONSOLE DOSPUNTOS DOSPUNTOS COLUMN IGUAL EXPRESSION:exp FLECHA TYPE_PRINT_ARRAY:array END PUNTOCOMA
+        {:
+                // Castear TYPE_PRINT_ARRAY a un arreglo
+                Object[] expArray = (Object[]) array;
+                System.out.println("Imprimir arreglo: " + array);
+                System.out.println("--------------");
+                System.out.println(exp.toString());
+                System.out.println("--------------");
+                // Imprimir cada elemento del array en una nueva línea
+                for (int i = 0; i < expArray.length; i++) {
+                 System.out.println(expArray[i]);
+                }
+        :};
+
+TYPE_PRINT_ARRAY ::= ARROBA ID:id
+        {:
+                RESULT = Mapas.getArreglo(id.toString());
+        :}
+        | LIST_VALUES:list
+        {:
+                RESULT = list;
         :};

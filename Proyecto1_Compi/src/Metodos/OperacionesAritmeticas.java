@@ -3,7 +3,7 @@ package Metodos;
 public class OperacionesAritmeticas {
     
     public double suma(Object num1, Object num2) {
-        if (num1 == null || num1.toString().isEmpty() || num2 == null || num2.toString().isEmpty()) {
+        if (num1 == null || num1.toString().isEmpty() || num2 == null || num2.toString().isEmpty()) {//para este y todos los demas no tiene que ser vacio o nulo
             return 0.0; // Retorna cero si alguno de los argumentos es nulo o está vacío
         } else {
             return Double.parseDouble(num1.toString()) + Double.parseDouble(num2.toString());

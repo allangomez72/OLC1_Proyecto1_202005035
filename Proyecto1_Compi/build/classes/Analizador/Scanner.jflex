@@ -65,7 +65,7 @@ HISTOGRAM = "HISTOGRAM"
 /*SIMBOLOS ESPECIALES*/
 DOSPUNTOS = ":"
 PUNTOCOMA = ";"
-FLECHA = "<-"
+FLECHA = "<-"|"\->"
 CORABRE = "["
 CORCIERRA = "]"
 ARROBA = "@"
@@ -262,7 +262,7 @@ ComentarioBloque = \<\![^>]*\!\>
                                         }
 
 <YYINITIAL> {FLECHA}                    { 
-                                            Lexemas.add(new Recorrido("Lexema: "+yytext(), "<-",yyline+"",yycolumn+""));
+                                            Lexemas.add(new Recorrido("Lexema: "+yytext(), "<- | ->",yyline+"",yycolumn+""));
                                             return new Symbol(sym.FLECHA, yyline, yycolumn,yytext());
                                         }
 
