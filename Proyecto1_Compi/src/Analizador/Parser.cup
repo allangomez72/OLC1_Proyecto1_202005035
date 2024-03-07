@@ -43,7 +43,7 @@ terminal String DECIMAL, ID, CADENA;
 
 /*NO TERMINALES NOW*/
 non terminal INICIO,INSTRUCTIONS, INSTRUCTION,SENTENCE,STATEMENT_VARIABLES,TYPE,EXPRESSION,STATEMENT_PRINT,CONCATENATION,ARREGLO_DECLARATION,ARREGLO_TYPE,LIST_VALUES;
-non terminal PRINT_ARRAY,TYPE_PRINT_ARRAY;
+non terminal PRINT_ARRAY,TYPE_PRINT_ARRAY,TYPE_VAR;
 
 /* The grammar rules */
 start with INICIO;
@@ -60,11 +60,21 @@ SENTENCE ::= STATEMENT_VARIABLES
         |STATEMENT_PRINT
         |ARREGLO_DECLARATION;
 
-STATEMENT_VARIABLES ::=  VAR DOSPUNTOS TYPE  DOSPUNTOS DOSPUNTOS ID:itentifier FLECHA EXPRESSION:value_ END PUNTOCOMA
+STATEMENT_VARIABLES ::=  VAR DOSPUNTOS TYPE_VAR  DOSPUNTOS DOSPUNTOS ID:itentifier FLECHA EXPRESSION:value_ END PUNTOCOMA
         {:
-                Mapas.setVariable(itentifier.toString(), value_);
-                System.out.println("Variable declarada: " + itentifier + " con valor: " + value_);
+                Object value = null;
+                if (value_ instanceof String) {
+                    value = value_.toString(); // Convertir a cadena explícitamente
+                } else {
+                    value = value_; // Mantener el valor tal como está
+                }
+                Mapas.setVariable(itentifier.toString(), value);
+                System.out.println("Variable declarada: " + itentifier + " con valor: " + value);
         :};
+
+
+TYPE_VAR ::= TYPE CORABRE CORCIERRA
+        | TYPE;
 
 TYPE ::= CHAR
         {:
@@ -127,7 +137,7 @@ CONCATENATION ::= EXPRESSION:exp COMA CONCATENATION:conca
         {:
                 RESULT = exp + " " + conca;
         :}
-        | EXPRESSION:ex {: RESULT= ex.toString(); :};
+        | EXPRESSION:ex {: RESULT= ex; :};
 
 
 ARREGLO_DECLARATION ::= ARREGLO DOSPUNTOS ARREGLO_TYPE DOSPUNTOS DOSPUNTOS ARROBA ID:id FLECHA CORABRE LIST_VALUES:list CORCIERRA END PUNTOCOMA
@@ -155,25 +165,29 @@ LIST_VALUES ::= EXPRESSION:expr COMA LIST_VALUES:list
             RESULT = newList; // Asignamos la nueva lista como resultado
         :};
 
-PRINT_ARRAY ::= CONSOLE DOSPUNTOS DOSPUNTOS COLUMN IGUAL EXPRESSION:exp FLECHA TYPE_PRINT_ARRAY:array END PUNTOCOMA
+PRINT_ARRAY ::= CONSOLE DOSPUNTOS DOSPUNTOS COLUMN IGUAL EXPRESSION:exp FLECHA TYPE_PRINT_ARRAY:list END PUNTOCOMA
         {:
-                // Castear TYPE_PRINT_ARRAY a un arreglo
-                Object[] expArray = (Object[]) array;
-                System.out.println("Imprimir arreglo: " + array);
-                System.out.println("--------------");
-                System.out.println(exp.toString());
-                System.out.println("--------------");
-                // Imprimir cada elemento del array en una nueva línea
-                for (int i = 0; i < expArray.length; i++) {
-                 System.out.println(expArray[i]);
+                        // Convertimos el resultado de TYPE_PRINT_ARRAY a una lista
+                ArrayList<Object> lista = (ArrayList<Object>)list;
+
+                // Iteramos sobre la lista y la imprimimos
+                for (Object obj : lista) {
+                System.out.println(obj);
                 }
         :};
 
 TYPE_PRINT_ARRAY ::= ARROBA ID:id
         {:
-                RESULT = Mapas.getArreglo(id.toString());
+                // Recuperamos el arreglo del HashMap usando el id
+                ArrayList<Object> list = Mapas.getArreglo(id);
+                RESULT = list; // Asignamos el arreglo como resultado
         :}
-        | LIST_VALUES:list
+        | CORABRE LIST_VALUES:list CORCIERRA
         {:
-                RESULT = list;
+                ArrayList<Object> lista = (ArrayList<Object>)list;
+                RESULT = lista; // Asignamos la lista como resultado
         :};
+
+
+
+

@@ -13,6 +13,8 @@ import java.io.BufferedReader;
 import java.io.StringReader;
 import Errores.Exception_;
 import java.util.ArrayList;
+
+import Metodos.Mapas;
 import Metodos.Recorrido;
 
 /**
@@ -245,6 +247,8 @@ public class Ventana extends javax.swing.JFrame {
             errores.addAll(scan.Errores);
             errores.addAll(parse.getErrores());
             tokens.addAll(scan.Lexemas);
+            System.out.println("------------------------------------\n\n");
+            Mapas.mostrarTodosLosArreglos();
 
            /* String result = "";
             for (int i = 0; i < parse.salidas.size(); i++) {

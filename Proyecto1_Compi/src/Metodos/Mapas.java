@@ -22,4 +22,12 @@ public class Mapas {
     public static ArrayList<Object> getArreglo(String name) {
         return arreglos.get(name);
     }
+    
+    public static void mostrarTodosLosArreglos() {
+        System.out.println("Arreglos y sus IDs asociados:");
+        for (String key : arreglos.keySet()) {
+            System.out.println("ID: " + key);
+            System.out.println("Arreglo: " + arreglos.get(key));
+        }
+    }
 }
