@@ -36,22 +36,24 @@ public class LexicalAnalysis implements java_cup.runtime.Scanner {
   /** 
    * Translates characters to character classes
    */
-  private static final String ZZ_CMAP_PACKED = 
-    "\11\0\1\53\1\55\1\57\1\55\1\55\22\0\1\54\1\56\1\52"+
-    "\5\0\1\37\1\40\2\0\1\41\1\32\1\44\1\0\12\43\1\27"+
-    "\1\30\1\31\1\42\1\33\1\0\1\36\1\5\1\22\1\13\1\11"+
-    "\1\7\1\46\1\4\1\20\1\50\1\25\1\46\1\15\1\6\1\10"+
-    "\1\3\1\1\1\46\1\2\1\47\1\17\1\21\1\12\1\46\1\24"+
-    "\1\26\1\23\1\34\1\0\1\35\1\0\1\51\1\0\1\5\1\22"+
-    "\1\13\1\11\1\7\1\46\1\4\1\20\1\50\1\25\1\46\1\15"+
-    "\1\6\1\10\1\3\1\1\1\46\1\2\1\47\1\17\1\21\1\12"+
-    "\1\46\1\24\1\26\1\23\1\0\1\45\10\0\1\57\252\0\2\16"+
-    "\115\0\1\14\u1ea8\0\1\57\1\57\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\udfe6\0";
-
-  /** 
-   * Translates characters to character classes
-   */
-  private static final char [] ZZ_CMAP = zzUnpackCMap(ZZ_CMAP_PACKED);
+  private static final char [] ZZ_CMAP = {
+     0,  0,  0,  0,  0,  0,  0,  0,  0, 43, 45, 47, 45, 45,  0,  0, 
+     0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 
+    44, 46, 42,  0,  0,  0,  0,  0, 31, 32,  0,  0, 33, 26, 36,  0, 
+    35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 23, 24, 25, 34, 27,  0, 
+    30,  5, 18, 11,  9,  7, 38,  4, 16, 40, 21, 38, 13,  6,  8,  3, 
+     1, 38,  2, 39, 15, 17, 10, 38, 20, 22, 19, 28,  0, 29,  0, 41, 
+     0,  5, 18, 11,  9,  7, 38,  4, 16, 40, 21, 38, 13,  6,  8,  3, 
+     1, 38,  2, 39, 15, 17, 10, 38, 20, 22, 19,  0, 37,  0,  0,  0, 
+     0,  0,  0,  0,  0, 47,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 
+     0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 
+     0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 
+     0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 
+     0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 
+     0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 
+     0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 
+     0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0
+  };
 
   /** 
    * Translates DFA states to action switch labels.
@@ -442,24 +444,6 @@ public class LexicalAnalysis implements java_cup.runtime.Scanner {
     this.zzReader = in;
   }
 
-
-  /** 
-   * Unpacks the compressed character translation table.
-   *
-   * @param packed   the packed character translation table
-   * @return         the unpacked character translation table
-   */
-  private static char [] zzUnpackCMap(String packed) {
-    char [] map = new char[0x110000];
-    int i = 0;  /* index in packed string  */
-    int j = 0;  /* index in unpacked array */
-    while (i < 224) {
-      int  count = packed.charAt(i++);
-      char value = packed.charAt(i++);
-      do map[j++] = value; while (--count > 0);
-    }
-    return map;
-  }
 
 
   /**

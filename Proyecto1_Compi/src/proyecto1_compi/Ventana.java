@@ -14,6 +14,7 @@ import java.io.StringReader;
 import Errores.Exception_;
 import java.util.ArrayList;
 
+import Metodos.Graficas;
 import Metodos.Mapas;
 import Metodos.Recorrido;
 
@@ -248,7 +249,9 @@ public class Ventana extends javax.swing.JFrame {
             errores.addAll(parse.getErrores());
             tokens.addAll(scan.Lexemas);
             System.out.println("------------------------------------\n\n");
-            Mapas.mostrarTodosLosArreglos();
+            //Mapas.mostrarTodosLosArreglos();
+            Graficas graficas = new Graficas();
+            graficas.mostrarGraficas();
 
            /* String result = "";
             for (int i = 0; i < parse.salidas.size(); i++) {
