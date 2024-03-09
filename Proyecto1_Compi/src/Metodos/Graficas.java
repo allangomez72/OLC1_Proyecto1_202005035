@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 public class Graficas {
 
-    private ArrayList<JFreeChart> graficas;
+    private static ArrayList<JFreeChart> graficas;
 
     public Graficas() {
         graficas = new ArrayList<>();
@@ -29,9 +29,11 @@ public class Graficas {
     public void agregarGraficaDePie(String titulo, ArrayList<Object> values, ArrayList<Object> labels) {
         DefaultPieDataset dataset = new DefaultPieDataset();
         for (int i = 0; i < values.size(); i++) {
-            dataset.setValue(labels.get(i).toString(), (Double) values.get(i));
+            double valor = Double.parseDouble(values.get(i).toString());
+            dataset.setValue(labels.get(i).toString(), valor);
         }
         JFreeChart chart = ChartFactory.createPieChart(titulo, dataset);
+        System.out.println("Grafica generada correctamente");
         graficas.add(chart);
     }
 
@@ -44,7 +46,7 @@ public class Graficas {
         graficas.add(chart);
     }
 
-    public void mostrarGraficas() {
+    public static void mostrarGraficas() {
         JFrame frame = new JFrame("Graficas");
         frame.setLayout(new GridLayout(1, graficas.size()));
 

@@ -1,0 +1,337 @@
+
+package Analizador;
+import java_cup.runtime.*;
+import Errores.Exception_;
+import Metodos.OperacionesAritmeticas;
+import Metodos.Mapas;
+import Metodos.OperacionesEstadisticas;
+import Metodos.Graficas;
+import java.util.ArrayList;
+
+parser code 
+{:
+
+    //lista de errores
+    public ArrayList<Exception_> Errores = new ArrayList();
+    
+    /**
+     * Método al que se llama automáticamente ante algún error sintactico.
+    **/ 
+    public void syntax_error(Symbol s){
+        Errores.add(new Exception_("Sintáctico", "Error de sintaxis detectado. Se detectó: " + s.value, s.left + "", s.right + ""));
+    }
+    /**
+     * Método al que se llama automáticamente ante algún error sintáctico 
+     * en el que ya no es posible una recuperación de errores.
+    **/ 
+    public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{ 
+        System.out.println("Error sintactico irrecuperable en la Línea " + (s.left)+ " Columna "+s.right+". Componente " + s.value + " no reconocidoo."); 
+    }
+
+    public ArrayList<Exception_> getErrores(){
+        return Errores;
+    }
+        //esto es para la grafica de Barras
+        public String title = "";
+        public ArrayList<Object> ejeX = new ArrayList<>();
+        public ArrayList<Object> ejeY = new ArrayList<>();
+        public String titleX = "";
+        public String titleY = "";
+
+        //esto es para la grafica de Pie
+        public ArrayList<Object> values = new ArrayList<>();
+        public ArrayList<Object> labels = new ArrayList<>();
+
+        //esto es para la grafica de Line es igual que la de barras xD
+
+:}
+
+
+/* Terminales (tokens devueltos por el escáner) */
+terminal String PROGRAM, END, VAR, CONSOLE, PRINT, CHAR, DOUBLE, ARREGLO;
+terminal String SUMA, RESTA, MULTIPLICACION, DIVISION, MODULO;
+terminal String MEDIA, MEDIANA, MODA, VARIANZA, MAX, MIN, COLUMN, GRAPH, PRBAR, PRPIE, PRLINE, EXEC;
+terminal String TITULO, LABEL, VALUES, EJE,PRX, PRY, HISTOGRAM;
+terminal String DOSPUNTOS, PUNTOCOMA, FLECHA, CORABRE, CORCIERRA, ARROBA, PARABRE, PARCIERRA, COMA, IGUAL;
+terminal String DECIMAL, ID, CADENA;
+
+/*NO TERMINALES NOW*/
+non terminal INICIO,INSTRUCTIONS, INSTRUCTION,SENTENCE,STATEMENT_VARIABLES,TYPE,EXPRESSION,STATEMENT_PRINT,CONCATENATION,ARREGLO_DECLARATION,ARREGLO_TYPE,LIST_VALUES;
+non terminal PRINT_ARRAY,TYPE_PRINT_ARRAY,TYPE_VAR,FUNCTION_GRAPH,TYPE_GRAPH,EXPRESSSION_GRAPH,TYPE_EJE,INSTRUCTION_GRAPH;
+
+/* The grammar rules */
+start with INICIO;
+INICIO ::= INSTRUCTIONS;
+
+INSTRUCTIONS ::= PROGRAM INSTRUCTION END PROGRAM
+        | error END PROGRAM;
+/*LO DIVIDI EN MUCHAS SENTENCIAS PARA QUE SEA RECURSIVO POR CADA INSTRUCCION PUEDE VENIR UNA SENTENCIA*/
+INSTRUCTION ::= INSTRUCTION SENTENCE
+        | SENTENCE;
+
+/*SENTENCIA PUEDE DECLAR VARIABLES, MOSTRAR POR UN PRINT, DECLARAR LOS ARREGLOS Y AUN FALTA*/
+SENTENCE ::= STATEMENT_VARIABLES
+        |STATEMENT_PRINT
+        |ARREGLO_DECLARATION
+        |PRINT_ARRAY
+        |FUNCTION_GRAPH;
+
+
+STATEMENT_VARIABLES ::=  VAR DOSPUNTOS TYPE_VAR  DOSPUNTOS DOSPUNTOS ID:itentifier FLECHA EXPRESSION:value_ END PUNTOCOMA
+        {:
+                Object value = null;
+                if (value_ instanceof String) {
+                    value = value_.toString(); // Convertir a cadena explícitamente
+                } else {
+                    value = value_; // Mantener el valor tal como está
+                }
+                Mapas.setVariable(itentifier.toString(), value);
+                System.out.println("Variable declarada: " + itentifier + " con valor: " + value);
+        :};
+
+
+TYPE_VAR ::= TYPE CORABRE CORCIERRA
+        | TYPE;
+
+TYPE ::= CHAR
+        {:
+                System.out.println("Tipo de dato char");
+        :}
+        | DOUBLE 
+        {:
+                System.out.println("Tipo de dato double");
+        :};
+
+EXPRESSION ::= DECIMAL:deci {: RESULT = deci; :}
+        |ID:id {:
+                Object auxMapa = null;
+                auxMapa = Mapas.getVariable(id.toString()); 
+                if (auxMapa != null) {
+                        RESULT = auxMapa; 
+                } else {
+                        System.out.println("Variable no declarada");
+                }
+        :}
+        |CADENA:cad {: RESULT = cad; :}
+        |SUMA PARABRE EXPRESSION:primero COMA EXPRESSION:segundo PARCIERRA }
+        {: 
+                OperacionesAritmeticas operacion = new OperacionesAritmeticas();
+                System.out.println("Suma: " + operacion.suma(primero, segundo));
+                RESULT = operacion.suma(primero, segundo);
+        :}
+        |RESTA PARABRE EXPRESSION:primero COMA EXPRESSION:segundo PARCIERRA
+        {:
+                OperacionesAritmeticas operacion = new OperacionesAritmeticas();
+                System.out.println("Resta: " + operacion.resta(primero, segundo));
+                RESULT = operacion.resta(primero, segundo);
+        :}
+
+        |MULTIPLICACION PARABRE EXPRESSION:primero COMA EXPRESSION:segundo PARCIERRA
+        {:
+                OperacionesAritmeticas operacion = new OperacionesAritmeticas();
+                System.out.println("Multiplicación: " + operacion.multiplicacion(primero, segundo));
+                RESULT = operacion.multiplicacion(primero, segundo);
+        :}
+        |DIVISION PARABRE EXPRESSION:primero COMA EXPRESSION:segundo PARCIERRA
+        {:
+                OperacionesAritmeticas operacion = new OperacionesAritmeticas();
+                System.out.println("División: " + operacion.division(primero, segundo));
+                RESULT = operacion.division(primero, segundo);
+        :}
+        |MODULO PARABRE EXPRESSION:primero COMA EXPRESSION:segundo PARCIERRA
+        {:
+                OperacionesAritmeticas operacion = new OperacionesAritmeticas();
+                System.out.println("Módulo: " + operacion.modulo(primero, segundo));
+                RESULT = operacion.modulo(primero, segundo);
+        :}
+        |MEDIA PARABRE TYPE_PRINT_ARRAY:list PARCIERRA
+        {:
+                OperacionesEstadisticas operacion = new OperacionesEstadisticas();
+                System.out.println("Media: " + operacion.media((ArrayList<Object>)list));
+                RESULT = operacion.media((ArrayList<Object>)list);
+        :}
+        |MEDIANA PARABRE TYPE_PRINT_ARRAY:list PARCIERRA
+        {:
+                OperacionesEstadisticas operacion = new OperacionesEstadisticas();
+                System.out.println("Mediana: " + operacion.mediana((ArrayList<Object>)list));
+                RESULT = operacion.mediana((ArrayList<Object>)list);
+        :}
+        |MODA PARABRE TYPE_PRINT_ARRAY:list PARCIERRA
+        {:
+                OperacionesEstadisticas operacion = new OperacionesEstadisticas();
+                System.out.println("Moda: " + operacion.moda((ArrayList<Object>)list));
+                RESULT = operacion.moda((ArrayList<Object>)list);
+        :}
+        |VARIANZA PARABRE TYPE_PRINT_ARRAY:list PARCIERRA
+        {:
+                OperacionesEstadisticas operacion = new OperacionesEstadisticas();
+                System.out.println("Varianza: " + operacion.varianza((ArrayList<Object>)list));
+                RESULT = operacion.varianza((ArrayList<Object>)list);
+        :}
+        |MAX PARABRE TYPE_PRINT_ARRAY:list PARCIERRA
+        {:
+                OperacionesEstadisticas operacion = new OperacionesEstadisticas();
+                System.out.println("Máximo: " + operacion.maximo((ArrayList<Object>)list));
+                RESULT = operacion.maximo((ArrayList<Object>)list);
+        :}
+        |MIN PARABRE TYPE_PRINT_ARRAY:list PARCIERRA
+        {:
+                OperacionesEstadisticas operacion = new OperacionesEstadisticas();
+                System.out.println("Mínimo: " + operacion.minimo((ArrayList<Object>)list));
+                RESULT = operacion.minimo((ArrayList<Object>)list);
+        :};
+
+STATEMENT_PRINT ::= CONSOLE DOSPUNTOS DOSPUNTOS PRINT IGUAL CONCATENATION:concat END PUNTOCOMA
+        {:
+                System.out.println("Imprimir: " + concat);
+        :};
+
+CONCATENATION ::= EXPRESSION:exp COMA CONCATENATION:conca
+        {:
+                RESULT = exp + " " + conca;
+        :}
+        | EXPRESSION:ex {: RESULT= ex; :};
+
+
+ARREGLO_DECLARATION ::= ARREGLO DOSPUNTOS ARREGLO_TYPE DOSPUNTOS DOSPUNTOS ARROBA ID:id FLECHA CORABRE LIST_VALUES:list CORCIERRA END PUNTOCOMA
+        {:
+            Mapas.setArreglo(id.toString(),(ArrayList<Object>) list);
+            System.out.println("Arreglo declarado: " + id + " con valores: " + list);
+        :};
+
+
+ARREGLO_TYPE ::= TYPE CORABRE CORCIERRA
+        | TYPE;
+
+LIST_VALUES ::= EXPRESSION:expr COMA LIST_VALUES:list
+        {:
+        //con esto me aseguro que todo sea de tipo Objetct y no haya problema luego
+            ArrayList<Object> newList = new ArrayList<>();
+            newList.addAll((ArrayList<Object>)list); // Copiamos la lista actual
+            newList.add(expr); // Agregamos el nuevo elemento
+            RESULT = newList; // Asignamos la nueva lista como resultado
+        :}
+        | EXPRESSION:exp 
+        {:
+            ArrayList<Object> newList = new ArrayList<>();
+            newList.add(exp); // Creamos una nueva lista con el único elemento
+            RESULT = newList; // Asignamos la nueva lista como resultado
+        :};
+
+PRINT_ARRAY ::= CONSOLE DOSPUNTOS DOSPUNTOS COLUMN IGUAL EXPRESSION:exp FLECHA TYPE_PRINT_ARRAY:list END PUNTOCOMA
+        {:
+                        // Convertimos el resultado de TYPE_PRINT_ARRAY a una lista
+                ArrayList<Object> lista = (ArrayList<Object>)list;
+                String guiones = "-";
+                System.out.println(guiones.repeat(20));
+                System.out.println(exp.toString());
+                System.out.println(guiones.repeat(20));
+
+                // Iteramos sobre la lista y la imprimimos
+                for (Object obj : lista) {
+                System.out.println(obj);
+                }
+        :};
+
+TYPE_PRINT_ARRAY ::= ARROBA ID:id
+        {:
+                // Recuperamos el arreglo del HashMap usando el id
+                ArrayList<Object> list = Mapas.getArreglo(id);
+                RESULT = list; // Asignamos el arreglo como resultado
+        :}
+        | CORABRE LIST_VALUES:list CORCIERRA
+        {:
+                ArrayList<Object> lista = (ArrayList<Object>)list;
+                RESULT = lista; // Asignamos la lista como resultado
+        :};
+
+INSTRUCTION_GRAPH ::= INSTRUCTION_GRAPH EXPRESSSION_GRAPH
+        |EXPRESSSION_GRAPH;
+
+FUNCTION_GRAPH ::= GRAPH TYPE_GRAPH:tipo PARABRE INSTRUCTION_GRAPH PARCIERRA END PUNTOCOMA
+        {:
+                System.out.println("Estoy en grafica "+tipo);
+        :};
+
+TYPE_GRAPH ::= PRBAR 
+        {: String var = "BARRAS";
+            RESULT = var;
+        :}
+        | PRPIE 
+        {: String var = "PIE";
+            RESULT = var;
+        :}
+        | PRLINE 
+        {: String var = "LINEA";
+            RESULT = var;
+        :}
+        | HISTOGRAM   
+        {: String var = "HISTOGRAMA";
+            RESULT = var;
+        :};
+
+
+EXPRESSSION_GRAPH ::= TITULO DOSPUNTOS DOSPUNTOS TYPE_VAR IGUAL CADENA:titulo END PUNTOCOMA
+        {:
+                title = titulo.toString();
+        :}
+        | EJE TYPE_EJE:tipoEje DOSPUNTOS DOSPUNTOS TYPE_VAR IGUAL TYPE_PRINT_ARRAY:list END PUNTOCOMA
+        {:
+                ejeX.clear();
+                ejeX.clear();
+                ArrayList<Object> lista = (ArrayList<Object>)list;
+                if (tipoEje.toString().equals("X")) {
+                    ejeX.addAll(lista);
+                } else if (tipoEje.toString().equals("Y")){
+                    ejeY.addAll(lista);
+                }
+        :}
+        | TITULO TYPE_EJE:tipoEje DOSPUNTOS DOSPUNTOS TYPE_VAR IGUAL CADENA:titulo END PUNTOCOMA
+        {:
+                if (tipoEje.toString().equals("X")) {
+                    titleX = titulo.toString();
+                } else if (tipoEje.toString().equals("Y")){
+                    titleY = titulo.toString();
+                }
+        :}
+        |LABEL DOSPUNTOS DOSPUNTOS TYPE_VAR IGUAL TYPE_PRINT_ARRAY:list END PUNTOCOMA
+        {:
+                labels.clear();
+                ArrayList<Object> lista = (ArrayList<Object>)list;
+                labels.addAll(lista);
+        
+        :}
+        |VALUES DOSPUNTOS DOSPUNTOS TYPE_VAR IGUAL TYPE_PRINT_ARRAY:list END PUNTOCOMA
+        {:      
+                values.clear();
+                ArrayList<Object> lista = (ArrayList<Object>)list;
+                values.addAll(lista);
+        :}
+        |EXEC GRAPH TYPE_GRAPH:tipo END PUNTOCOMA
+                {:
+                System.out.println("Estoy en grafica Grafica de tipo: " + tipo);
+                //creamos el objeto de graficas
+                Graficas graficas = new Graficas();
+                tipo = tipo.toString();
+
+                if (tipo.equals("BARRAS")) {
+                    System.out.println("Grafica de barras");
+                    graficas.agregarGraficaDeBarras(title, ejeX, ejeY, titleX, titleY);
+
+                } else if (tipo.equals("PIE")){
+                    System.out.println("Grafica de pie");
+                    graficas.agregarGraficaDePie(title,values, labels);
+                } else if (tipo.equals("LINEA")){
+                    System.out.println("Grafica de linea");
+                    graficas.agregarGraficaDeLineas(title, ejeX, ejeY, titleX, titleY);
+                }
+        :};
+        
+TYPE_EJE ::= PRX 
+        {: String varX = "X";
+            RESULT = varX; 
+        :}
+        | PRY 
+        {: String varY = "Y";
+            RESULT = varY;
+        :};

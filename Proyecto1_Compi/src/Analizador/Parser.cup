@@ -32,11 +32,11 @@ parser code
         return Errores;
     }
         //esto es para la grafica de Barras
-        public String title = null;
+        public String title = "";
         public ArrayList<Object> ejeX = new ArrayList<>();
         public ArrayList<Object> ejeY = new ArrayList<>();
-        public String titleX = null;
-        public String titleY = null;
+        public String titleX = "";
+        public String titleY = "";
 
         //esto es para la grafica de Pie
         public ArrayList<Object> values = new ArrayList<>();
@@ -143,7 +143,43 @@ EXPRESSION ::= DECIMAL:deci {: RESULT = deci; :}
                 OperacionesAritmeticas operacion = new OperacionesAritmeticas();
                 System.out.println("Módulo: " + operacion.modulo(primero, segundo));
                 RESULT = operacion.modulo(primero, segundo);
-        :}; 
+        :}
+        |MEDIA PARABRE TYPE_PRINT_ARRAY:list PARCIERRA
+        {:
+                OperacionesEstadisticas operacion = new OperacionesEstadisticas();
+                System.out.println("Media: " + operacion.media((ArrayList<Object>)list));
+                RESULT = operacion.media((ArrayList<Object>)list);
+        :}
+        |MEDIANA PARABRE TYPE_PRINT_ARRAY:list PARCIERRA
+        {:
+                OperacionesEstadisticas operacion = new OperacionesEstadisticas();
+                System.out.println("Mediana: " + operacion.mediana((ArrayList<Object>)list));
+                RESULT = operacion.mediana((ArrayList<Object>)list);
+        :}
+        |MODA PARABRE TYPE_PRINT_ARRAY:list PARCIERRA
+        {:
+                OperacionesEstadisticas operacion = new OperacionesEstadisticas();
+                System.out.println("Moda: " + operacion.moda((ArrayList<Object>)list));
+                RESULT = operacion.moda((ArrayList<Object>)list);
+        :}
+        |VARIANZA PARABRE TYPE_PRINT_ARRAY:list PARCIERRA
+        {:
+                OperacionesEstadisticas operacion = new OperacionesEstadisticas();
+                System.out.println("Varianza: " + operacion.varianza((ArrayList<Object>)list));
+                RESULT = operacion.varianza((ArrayList<Object>)list);
+        :}
+        |MAX PARABRE TYPE_PRINT_ARRAY:list PARCIERRA
+        {:
+                OperacionesEstadisticas operacion = new OperacionesEstadisticas();
+                System.out.println("Máximo: " + operacion.maximo((ArrayList<Object>)list));
+                RESULT = operacion.maximo((ArrayList<Object>)list);
+        :}
+        |MIN PARABRE TYPE_PRINT_ARRAY:list PARCIERRA
+        {:
+                OperacionesEstadisticas operacion = new OperacionesEstadisticas();
+                System.out.println("Mínimo: " + operacion.minimo((ArrayList<Object>)list));
+                RESULT = operacion.minimo((ArrayList<Object>)list);
+        :};
 
 STATEMENT_PRINT ::= CONSOLE DOSPUNTOS DOSPUNTOS PRINT IGUAL CONCATENATION:concat END PUNTOCOMA
         {:
@@ -209,10 +245,12 @@ TYPE_PRINT_ARRAY ::= ARROBA ID:id
                 RESULT = lista; // Asignamos la lista como resultado
         :};
 
+INSTRUCTION_GRAPH ::= INSTRUCTION_GRAPH EXPRESSSION_GRAPH
+        |EXPRESSSION_GRAPH;
 
-FUNCTION_GRAPH ::= GRAPH TYPE_GRAPH PARABRE PARCIERRA END PUNTOCOMA
+FUNCTION_GRAPH ::= GRAPH TYPE_GRAPH:tipo PARABRE INSTRUCTION_GRAPH PARCIERRA END PUNTOCOMA
         {:
-                System.out.println("Estoy en grafica");
+                System.out.println("Estoy en grafica "+tipo);
         :};
 
 TYPE_GRAPH ::= PRBAR 
@@ -233,9 +271,6 @@ TYPE_GRAPH ::= PRBAR
         :};
 
 
-INSTRUCTION_GRAPH ::= INSTRUCTION_GRAPH EXPRESSSION_GRAPH
-        |EXPRESSSION_GRAPH;
-
 EXPRESSSION_GRAPH ::= TITULO DOSPUNTOS DOSPUNTOS TYPE_VAR IGUAL CADENA:titulo END PUNTOCOMA
         {:
                 title = titulo.toString();
@@ -245,17 +280,17 @@ EXPRESSSION_GRAPH ::= TITULO DOSPUNTOS DOSPUNTOS TYPE_VAR IGUAL CADENA:titulo EN
                 ejeX.clear();
                 ejeX.clear();
                 ArrayList<Object> lista = (ArrayList<Object>)list;
-                if (tipoEje.equals("X")) {
+                if (tipoEje.toString().equals("X")) {
                     ejeX.addAll(lista);
-                } else if (tipoEje.equals("Y")){
+                } else if (tipoEje.toString().equals("Y")){
                     ejeY.addAll(lista);
                 }
         :}
         | TITULO TYPE_EJE:tipoEje DOSPUNTOS DOSPUNTOS TYPE_VAR IGUAL CADENA:titulo END PUNTOCOMA
         {:
-                if (tipoEje.equals("X")) {
+                if (tipoEje.toString().equals("X")) {
                     titleX = titulo.toString();
-                } else if (tipoEje.equals("Y")){
+                } else if (tipoEje.toString().equals("Y")){
                     titleY = titulo.toString();
                 }
         :}
@@ -300,5 +335,3 @@ TYPE_EJE ::= PRX
         {: String varY = "Y";
             RESULT = varY;
         :};
-
-
