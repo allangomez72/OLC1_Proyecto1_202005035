@@ -13,20 +13,21 @@ public class Graficas {
 
     private static ArrayList<JFreeChart> graficas;
 
-    public Graficas() {
+    static {
         graficas = new ArrayList<>();
     }
 
-    public void agregarGraficaDeBarras(String titulo, ArrayList<Object> ejeX, ArrayList<Object> ejeY, String tituloX, String tituloY) {
+    public static void agregarGraficaDeBarras(String titulo, ArrayList<Object> ejeX, ArrayList<Object> ejeY, String tituloX, String tituloY) {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
         for (int i = 0; i < ejeX.size(); i++) {
-            dataset.addValue((Double) ejeY.get(i), titulo, ejeX.get(i).toString());
+            double valor = Double.parseDouble(ejeY.get(i).toString());
+            dataset.addValue(valor, titulo, ejeX.get(i).toString());
         }
         JFreeChart chart = ChartFactory.createBarChart(titulo, tituloX, tituloY, dataset);
         graficas.add(chart);
     }
 
-    public void agregarGraficaDePie(String titulo, ArrayList<Object> values, ArrayList<Object> labels) {
+    public static void agregarGraficaDePie(String titulo, ArrayList<Object> values, ArrayList<Object> labels) {
         DefaultPieDataset dataset = new DefaultPieDataset();
         for (int i = 0; i < values.size(); i++) {
             double valor = Double.parseDouble(values.get(i).toString());
@@ -37,10 +38,11 @@ public class Graficas {
         graficas.add(chart);
     }
 
-    public void agregarGraficaDeLineas(String titulo, ArrayList<Object> ejeX, ArrayList<Object> ejeY, String tituloX, String tituloY) {
+    public static void agregarGraficaDeLineas(String titulo, ArrayList<Object> ejeX, ArrayList<Object> ejeY, String tituloX, String tituloY) {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
         for (int i = 0; i < ejeX.size(); i++) {
-            dataset.addValue((Double) ejeY.get(i), titulo, ejeX.get(i).toString());
+           double valor = Double.parseDouble(ejeY.get(i).toString());
+           dataset.addValue(valor, titulo, ejeX.get(i).toString());
         }
         JFreeChart chart = ChartFactory.createLineChart(titulo, tituloX, tituloY, dataset);
         graficas.add(chart);
@@ -59,5 +61,4 @@ public class Graficas {
         frame.pack();
         frame.setVisible(true);
     }
-
 }

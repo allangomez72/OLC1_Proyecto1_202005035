@@ -57,7 +57,7 @@ terminal String DECIMAL, ID, CADENA;
 
 /*NO TERMINALES NOW*/
 non terminal INICIO,INSTRUCTIONS, INSTRUCTION,SENTENCE,STATEMENT_VARIABLES,TYPE,EXPRESSION,STATEMENT_PRINT,CONCATENATION,ARREGLO_DECLARATION,ARREGLO_TYPE,LIST_VALUES;
-non terminal PRINT_ARRAY,TYPE_PRINT_ARRAY,TYPE_VAR,FUNCTION_GRAPH,TYPE_GRAPH,EXPRESSSION_GRAPH,TYPE_EJE,INSTRUCTION_GRAPH;
+non terminal PRINT_ARRAY,TYPE_PRINT_ARRAY,TYPE_VAR,FUNCTION_GRAPH,TYPE_GRAPH,EXPRESSSION_GRAPH,TYPE_EJE,INSTRUCTION_GRAPH,TITULO_PRINCIPAL,TITULO_PRINCIPAL_RULE,TITULO_EJE,LABELS,VALORES,EXEC_GRAPH,EJEES_VALORES;
 
 /* The grammar rules */
 start with INICIO;
@@ -271,61 +271,74 @@ TYPE_GRAPH ::= PRBAR
         :};
 
 
-EXPRESSSION_GRAPH ::= TITULO DOSPUNTOS DOSPUNTOS TYPE_VAR IGUAL CADENA:titulo END PUNTOCOMA
-        {:
-                title = titulo.toString();
-        :}
-        | EJE TYPE_EJE:tipoEje DOSPUNTOS DOSPUNTOS TYPE_VAR IGUAL TYPE_PRINT_ARRAY:list END PUNTOCOMA
-        {:
-                ejeX.clear();
-                ejeX.clear();
-                ArrayList<Object> lista = (ArrayList<Object>)list;
-                if (tipoEje.toString().equals("X")) {
-                    ejeX.addAll(lista);
-                } else if (tipoEje.toString().equals("Y")){
-                    ejeY.addAll(lista);
-                }
-        :}
-        | TITULO TYPE_EJE:tipoEje DOSPUNTOS DOSPUNTOS TYPE_VAR IGUAL CADENA:titulo END PUNTOCOMA
-        {:
-                if (tipoEje.toString().equals("X")) {
-                    titleX = titulo.toString();
-                } else if (tipoEje.toString().equals("Y")){
-                    titleY = titulo.toString();
-                }
-        :}
-        |LABEL DOSPUNTOS DOSPUNTOS TYPE_VAR IGUAL TYPE_PRINT_ARRAY:list END PUNTOCOMA
-        {:
-                labels.clear();
-                ArrayList<Object> lista = (ArrayList<Object>)list;
-                labels.addAll(lista);
-        
-        :}
-        |VALUES DOSPUNTOS DOSPUNTOS TYPE_VAR IGUAL TYPE_PRINT_ARRAY:list END PUNTOCOMA
-        {:      
-                values.clear();
-                ArrayList<Object> lista = (ArrayList<Object>)list;
-                values.addAll(lista);
-        :}
-        |EXEC GRAPH TYPE_GRAPH:tipo END PUNTOCOMA
-                {:
-                System.out.println("Estoy en grafica Grafica de tipo: " + tipo);
-                //creamos el objeto de graficas
-                Graficas graficas = new Graficas();
-                tipo = tipo.toString();
+EXPRESSSION_GRAPH ::= TITULO_PRINCIPAL | TITULO_EJE | EJEES_VALORES |LABELS | VALORES | EXEC_GRAPH;
 
-                if (tipo.equals("BARRAS")) {
-                    System.out.println("Grafica de barras");
-                    graficas.agregarGraficaDeBarras(title, ejeX, ejeY, titleX, titleY);
+TITULO_PRINCIPAL ::= TITULO_PRINCIPAL_RULE END PUNTOCOMA;
 
-                } else if (tipo.equals("PIE")){
-                    System.out.println("Grafica de pie");
-                    graficas.agregarGraficaDePie(title,values, labels);
-                } else if (tipo.equals("LINEA")){
-                    System.out.println("Grafica de linea");
-                    graficas.agregarGraficaDeLineas(title, ejeX, ejeY, titleX, titleY);
-                }
+TITULO_PRINCIPAL_RULE ::= TITULO DOSPUNTOS DOSPUNTOS TYPE_VAR IGUAL EXPRESSION:titulo
+    {:
+        title = titulo.toString();
+    :};
+
+TITULO_EJE ::= TITULO TYPE_EJE:tipoEje DOSPUNTOS DOSPUNTOS TYPE_VAR IGUAL EXPRESSION:titulo END PUNTOCOMA
+    {:
+        if (tipoEje.toString().equals("X")) {
+            titleX = titulo.toString();
+        } else if (tipoEje.toString().equals("Y")){
+            titleY = titulo.toString();
+        }
+    :};
+
+EJEES_VALORES ::= EJE TYPE_EJE:tipoEje DOSPUNTOS DOSPUNTOS TYPE_VAR IGUAL TYPE_PRINT_ARRAY:list END PUNTOCOMA
+        {:
+        // Limpia las listas antes de agregar nuevos valores
+        if (tipoEje.toString().equals("X")) {
+                ejeX.clear();
+        } else if (tipoEje.toString().equals("Y")) {
+                ejeY.clear();
+        }
+
+        // Agrega los nuevos valores a las listas correspondientes
+        ArrayList<Object> lista = (ArrayList<Object>) list;
+        if (tipoEje.toString().equals("X")) {
+                ejeX.addAll(lista);
+        } else if (tipoEje.toString().equals("Y")) {
+                ejeY.addAll(lista);
+        }
         :};
+
+
+LABELS ::= LABEL DOSPUNTOS DOSPUNTOS TYPE_VAR IGUAL TYPE_PRINT_ARRAY:list END PUNTOCOMA
+    {:
+        labels.clear();
+        ArrayList<Object> lista = (ArrayList<Object>)list;
+        labels.addAll(lista);
+    :};
+
+VALORES ::= VALUES DOSPUNTOS DOSPUNTOS TYPE_VAR IGUAL TYPE_PRINT_ARRAY:list END PUNTOCOMA
+    {:
+        values.clear();
+        ArrayList<Object> lista = (ArrayList<Object>)list;
+        values.addAll(lista);
+    :};
+
+EXEC_GRAPH ::= EXEC GRAPH TYPE_GRAPH:tipo END PUNTOCOMA
+    {:
+        System.out.println("Estoy en grafica Grafica de tipo: " + tipo);
+        tipo = tipo.toString();
+
+        if (tipo.equals("BARRAS")) {
+            System.out.println("Grafica de barras");
+            Graficas.agregarGraficaDeBarras(title, ejeX, ejeY, titleX, titleY);
+        } else if (tipo.equals("PIE")){
+            System.out.println("Grafica de pie");
+            Graficas.agregarGraficaDePie(title,values, labels);
+        } else if (tipo.equals("LINEA")){
+            System.out.println("Grafica de linea");
+            Graficas.agregarGraficaDeLineas(title, ejeX, ejeY, titleX, titleY);
+        }
+    :};
+
         
 TYPE_EJE ::= PRX 
         {: String varX = "X";
