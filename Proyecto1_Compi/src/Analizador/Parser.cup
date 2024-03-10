@@ -10,7 +10,8 @@ import java.util.ArrayList;
 
 parser code 
 {:
-
+        //es para las salidad de print y column en consola
+        public ArrayList<String> salidas = new ArrayList<String>();
     //lista de errores
     public ArrayList<Exception_> Errores = new ArrayList();
     
@@ -184,11 +185,12 @@ EXPRESSION ::= DECIMAL:deci {: RESULT = deci; :}
 STATEMENT_PRINT ::= CONSOLE DOSPUNTOS DOSPUNTOS PRINT IGUAL CONCATENATION:concat END PUNTOCOMA
         {:
                 System.out.println("Imprimir: " + concat);
+                salidas.add(concat.toString());
         :};
 
 CONCATENATION ::= EXPRESSION:exp COMA CONCATENATION:conca
         {:
-                RESULT = exp + " " + conca;
+                RESULT = exp + ", " + conca;
         :}
         | EXPRESSION:ex {: RESULT= ex; :};
 
@@ -226,10 +228,13 @@ PRINT_ARRAY ::= CONSOLE DOSPUNTOS DOSPUNTOS COLUMN IGUAL EXPRESSION:exp FLECHA T
                 System.out.println(guiones.repeat(20));
                 System.out.println(exp.toString());
                 System.out.println(guiones.repeat(20));
-
+                salidas.add(guiones.repeat(50));
+                salidas.add(exp.toString());
+                salidas.add(guiones.repeat(50));
                 // Iteramos sobre la lista y la imprimimos
                 for (Object obj : lista) {
                 System.out.println(obj);
+                salidas.add(obj.toString());
                 }
         :};
 
@@ -330,12 +335,17 @@ EXEC_GRAPH ::= EXEC GRAPH TYPE_GRAPH:tipo END PUNTOCOMA
         if (tipo.equals("BARRAS")) {
             System.out.println("Grafica de barras");
             Graficas.agregarGraficaDeBarras(title, ejeX, ejeY, titleX, titleY);
+            salidas.add("Grafica de barras generada con exito");
         } else if (tipo.equals("PIE")){
             System.out.println("Grafica de pie");
             Graficas.agregarGraficaDePie(title,values, labels);
+            salidas.add("Grafica de pie generada con exito");
+
         } else if (tipo.equals("LINEA")){
             System.out.println("Grafica de linea");
             Graficas.agregarGraficaDeLineas(title, ejeX, ejeY, titleX, titleY);
+            salidas.add("Grafica de lineal generada con exito");
+
         }
     :};
 

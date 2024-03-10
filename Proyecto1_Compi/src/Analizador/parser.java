@@ -351,7 +351,8 @@ public class parser extends java_cup.runtime.lr_parser {
 
 
 
-
+        //es para las salidad de print y column en consola
+        public ArrayList<String> salidas = new ArrayList<String>();
     //lista de errores
     public ArrayList<Exception_> Errores = new ArrayList();
     
@@ -823,6 +824,7 @@ class CUP$parser$actions {
 		Object concat = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
 		
                 System.out.println("Imprimir: " + concat);
+                salidas.add(concat.toString());
         
               CUP$parser$result = parser.getSymbolFactory().newSymbol("STATEMENT_PRINT",7, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-7)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -839,7 +841,7 @@ class CUP$parser$actions {
 		int concaright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		Object conca = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		
-                RESULT = exp + " " + conca;
+                RESULT = exp + ", " + conca;
         
               CUP$parser$result = parser.getSymbolFactory().newSymbol("CONCATENATION",8, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -947,10 +949,13 @@ class CUP$parser$actions {
                 System.out.println(guiones.repeat(20));
                 System.out.println(exp.toString());
                 System.out.println(guiones.repeat(20));
-
+                salidas.add(guiones.repeat(50));
+                salidas.add(exp.toString());
+                salidas.add(guiones.repeat(50));
                 // Iteramos sobre la lista y la imprimimos
                 for (Object obj : lista) {
                 System.out.println(obj);
+                salidas.add(obj.toString());
                 }
         
               CUP$parser$result = parser.getSymbolFactory().newSymbol("PRINT_ARRAY",12, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-9)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
@@ -1233,19 +1238,22 @@ class CUP$parser$actions {
 		Object tipo = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
 		
         System.out.println("Estoy en grafica Grafica de tipo: " + tipo);
-        //creamos el objeto de graficas
-        Graficas graficas = new Graficas();
         tipo = tipo.toString();
 
         if (tipo.equals("BARRAS")) {
             System.out.println("Grafica de barras");
-            graficas.agregarGraficaDeBarras(title, ejeX, ejeY, titleX, titleY);
+            Graficas.agregarGraficaDeBarras(title, ejeX, ejeY, titleX, titleY);
+            salidas.add("Grafica de barras generada con exito");
         } else if (tipo.equals("PIE")){
             System.out.println("Grafica de pie");
-            graficas.agregarGraficaDePie(title,values, labels);
+            Graficas.agregarGraficaDePie(title,values, labels);
+            salidas.add("Grafica de pie generada con exito");
+
         } else if (tipo.equals("LINEA")){
             System.out.println("Grafica de linea");
-            graficas.agregarGraficaDeLineas(title, ejeX, ejeY, titleX, titleY);
+            Graficas.agregarGraficaDeLineas(title, ejeX, ejeY, titleX, titleY);
+            salidas.add("Grafica de lineal generada con exito");
+
         }
     
               CUP$parser$result = parser.getSymbolFactory().newSymbol("EXEC_GRAPH",25, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
