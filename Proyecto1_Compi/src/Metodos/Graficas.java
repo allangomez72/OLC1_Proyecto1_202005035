@@ -8,6 +8,8 @@ import org.jfree.data.general.DefaultPieDataset;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Graficas {
 
@@ -45,6 +47,25 @@ public class Graficas {
            dataset.addValue(valor, titulo, ejeX.get(i).toString());
         }
         JFreeChart chart = ChartFactory.createLineChart(titulo, tituloX, tituloY, dataset);
+        graficas.add(chart);
+    }
+
+        // Método para generar un histograma y agregar una gráfica de barras
+    public static void generarHistograma(String titulo, ArrayList<Object> datos) {
+        // Contar la frecuencia de cada dato
+        Map<Object, Integer> frecuencias = new HashMap<>();
+        for (Object dato : datos) {
+            frecuencias.put(dato, frecuencias.getOrDefault(dato, 0) + 1);
+        }
+
+        // Crear un dataset para la gráfica de barras
+        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+        for (Map.Entry<Object, Integer> entry : frecuencias.entrySet()) {
+            dataset.addValue(entry.getValue(), "Frecuencia", entry.getKey().toString());
+        }
+
+        // Agregar la gráfica de barras
+        JFreeChart chart = ChartFactory.createBarChart(titulo, "Dato", "Frecuencia", dataset);
         graficas.add(chart);
     }
 

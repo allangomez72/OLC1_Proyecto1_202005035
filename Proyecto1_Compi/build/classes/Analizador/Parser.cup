@@ -281,22 +281,32 @@ INSTRUCTION_GRAPH ::= INSTRUCTION_GRAPH EXPRESSSION_GRAPH
 FUNCTION_GRAPH ::= GRAPH TYPE_GRAPH:tipo PARABRE INSTRUCTION_GRAPH PARCIERRA END PUNTOCOMA
         {:
                 System.out.println("Estoy en grafica "+tipo);
-        :};
+        :}
+        |HISTOGRAM PARABRE INSTRUCTION_GRAPH EXEC HISTOGRAM END PUNTOCOMA PARCIERRA  END PUNTOCOMA
+        {:
+                System.out.println("Estoy en grafica de histograma");
+                Graficas.generarHistograma(title, values);
+                salidas.add("Grafica de histograma generada con exito");
+        :};   
 
 TYPE_GRAPH ::= PRBAR 
         {: String var = "BARRAS";
+                System.out.println("Grafica de barras");
             RESULT = var;
         :}
         | PRPIE 
         {: String var = "PIE";
+                System.out.println("Grafica de pie");
             RESULT = var;
         :}
         | PRLINE 
         {: String var = "LINEA";
+                System.out.println("Grafica de lineas");
             RESULT = var;
         :}
         | HISTOGRAM   
         {: String var = "HISTOGRAMA";
+                System.out.println("Grafica de histograma");
             RESULT = var;
         :};
 
@@ -307,32 +317,36 @@ TITULO_PRINCIPAL ::= TITULO_PRINCIPAL_RULE END PUNTOCOMA;
 
 TITULO_PRINCIPAL_RULE ::= TITULO DOSPUNTOS DOSPUNTOS TYPE_VAR IGUAL EXPRESSION:titulo
     {:
-        title = titulo.toString();
+        System.out.println("Titulo principal: "+titulo);
+        title = String.valueOf(titulo);
     :};
 
 TITULO_EJE ::= TITULO TYPE_EJE:tipoEje DOSPUNTOS DOSPUNTOS TYPE_VAR IGUAL EXPRESSION:titulo END PUNTOCOMA
-    {:
-        if (tipoEje.toString().equals("X")) {
-            titleX = titulo.toString();
-        } else if (tipoEje.toString().equals("Y")){
-            titleY = titulo.toString();
+    {:  tipo = String.valueOf(tipoEje);
+        System.out.println("Titulo: " + tipo+" es: "+titulo);
+        if (tipo.equals("X")) {
+            titleX = String.valueOf(titulo);
+        } else if (tipo.equals("Y")){
+            titleY = String.valueOf(titulo);
         }
     :};
 
 EJEES_VALORES ::= EJE TYPE_EJE:tipoEje DOSPUNTOS DOSPUNTOS TYPE_VAR IGUAL TYPE_PRINT_ARRAY:list END PUNTOCOMA
         {:
+        tipo = String.valueOf(tipoEje);
+        System.out.println("Eje: " + tipo+" es: "+list);
         // Limpia las listas antes de agregar nuevos valores
-        if (tipoEje.toString().equals("X")) {
+        if (tipo.equals("X")) {
                 ejeX.clear();
-        } else if (tipoEje.toString().equals("Y")) {
+        } else if (tipo.equals("Y")) {
                 ejeY.clear();
         }
 
         // Agrega los nuevos valores a las listas correspondientes
         ArrayList<Object> lista = (ArrayList<Object>) list;
-        if (tipoEje.toString().equals("X")) {
+        if (tipo.equals("X")) {
                 ejeX.addAll(lista);
-        } else if (tipoEje.toString().equals("Y")) {
+        } else if (tipo.equals("Y")) {
                 ejeY.addAll(lista);
         }
         :};
@@ -371,15 +385,18 @@ EXEC_GRAPH ::= EXEC GRAPH TYPE_GRAPH:tipo END PUNTOCOMA
             Graficas.agregarGraficaDeLineas(title, ejeX, ejeY, titleX, titleY);
             salidas.add("Grafica de lineal generada con exito");
 
+        } else if (tipo.equals("HISTOGRAMA")){
+            System.out.println("Grafica de histograma");
+            
         }
     :};
 
         
-TYPE_EJE ::= PRX 
-        {: String varX = "X";
+TYPE_EJE ::= PRX:varX
+        {: 
             RESULT = varX; 
         :}
-        | PRY 
-        {: String varY = "Y";
+        | PRY:varY
+        {: 
             RESULT = varY;
         :};
