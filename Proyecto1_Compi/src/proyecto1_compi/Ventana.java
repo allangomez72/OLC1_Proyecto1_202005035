@@ -22,6 +22,8 @@ import java.util.logging.Level;
 import Metodos.Graficas;
 import Metodos.Mapas;
 import Metodos.Recorrido;
+import Metodos.TablaSimbolos;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -37,6 +39,7 @@ public class Ventana extends javax.swing.JFrame {
     
     ArrayList<Exception_> errores = new ArrayList();
     ArrayList<Recorrido> tokens = new ArrayList();
+    ArrayList<TablaSimbolos> tablaSimbolos = new ArrayList();
     /**
      * Creates new form Ventana
      */
@@ -88,14 +91,11 @@ public class Ventana extends javax.swing.JFrame {
         nuevoTabbedPane = new javax.swing.JTabbedPane();
         jScrollPane2 = new javax.swing.JScrollPane();
         TextEntrada = new javax.swing.JTextPane();
-        jPanel2 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         ConsolaSalida = new javax.swing.JTextArea();
         jLabel1 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
         buttonEjecutar = new javax.swing.JButton();
         jMenuBar2 = new javax.swing.JMenuBar();
         ArchivoMenu = new javax.swing.JMenu();
@@ -115,25 +115,12 @@ public class Ventana extends javax.swing.JFrame {
 
         nuevoTabbedPane.addTab("Archivo", jScrollPane2);
 
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 318, Short.MAX_VALUE)
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
-
-        jButton1.setText("Anterior");
+        jButton1.setText("Mostar Graficas");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
             }
         });
-
-        jButton2.setText("Siguiente");
 
         ConsolaSalida.setColumns(20);
         ConsolaSalida.setRows(5);
@@ -142,8 +129,6 @@ public class Ventana extends javax.swing.JFrame {
         jLabel1.setText("Consola");
 
         jLabel4.setText("Entrada");
-
-        jLabel5.setText("Grafica");
 
         buttonEjecutar.setText("Ejecutar");
         buttonEjecutar.addActionListener(new java.awt.event.ActionListener() {
@@ -160,44 +145,28 @@ public class Ventana extends javax.swing.JFrame {
                 .addGap(19, 19, 19)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(nuevoTabbedPane, javax.swing.GroupLayout.PREFERRED_SIZE, 368, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(buttonEjecutar, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGap(56, 56, 56)
-                                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(68, 68, 68))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(36, 36, 36))))
+                        .addComponent(buttonEjecutar, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 751, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 751, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(nuevoTabbedPane, javax.swing.GroupLayout.PREFERRED_SIZE, 723, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(0, 15, Short.MAX_VALUE))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(19, 19, 19)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4)
-                    .addComponent(jLabel5))
+                .addComponent(jLabel4)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(nuevoTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 216, Short.MAX_VALUE)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(nuevoTabbedPane, javax.swing.GroupLayout.PREFERRED_SIZE, 216, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(16, 16, 16)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
-                    .addComponent(jButton2)
                     .addComponent(buttonEjecutar))
                 .addGap(18, 18, 18)
                 .addComponent(jLabel1)
@@ -264,6 +233,11 @@ public class Ventana extends javax.swing.JFrame {
         ReportesMenu.add(ButtonErrores);
 
         ButtonTS.setText("Reporte Tabla de Simbolos");
+        ButtonTS.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ButtonTSActionPerformed(evt);
+            }
+        });
         ReportesMenu.add(ButtonTS);
 
         jMenuBar2.add(ReportesMenu);
@@ -317,6 +291,7 @@ public class Ventana extends javax.swing.JFrame {
             errores.addAll(scan.Errores);
             errores.addAll(parse.getErrores());
             tokens.addAll(scan.Lexemas);
+            tablaSimbolos.addAll(parse.getTs());
             System.out.println("------------------------------------\n\n");
 
 
@@ -386,6 +361,16 @@ public class Ventana extends javax.swing.JFrame {
             Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_ButtonErroresActionPerformed
+
+    private void ButtonTSActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ButtonTSActionPerformed
+
+        try {
+            tablaReporte(tablaSimbolos);
+            CrearCss();
+        } catch (IOException ex) {
+            Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_ButtonTSActionPerformed
 
         private void abrirNuevoTab() {
         JTabbedPane nuevoTabbedPane = new JTabbedPane();
@@ -526,6 +511,62 @@ public class Ventana extends javax.swing.JFrame {
         }
     }
     
+        public static void tablaReporte(ArrayList<TablaSimbolos> tableSymbols) throws IOException {
+        FileWriter fichero = null;
+        PrintWriter pw = null;
+        try {
+            
+            String path = "Reportes/TablaSimbolos.html";
+            fichero = new FileWriter(path);
+            pw = new PrintWriter(fichero);
+            
+            //Comenzamos a escribir el html
+            pw.println("<!DOCTYPE html>");
+            pw.println("<html lang=\"es\">");
+            pw.println("<head>");
+            pw.println("    <meta charset=\"UTF-8\">");
+            pw.println("    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">");
+            pw.println("    <title>TABLA DE SIMBOLOS</title>");
+            pw.println("    <link rel=\"stylesheet\" href=\"style.css\">");
+            pw.println("</head>");
+            pw.println("<body>");
+            pw.println("    <h1>TABLA DE SIMBOLOS</h1>");
+            pw.println("    <table>");
+            pw.println("        <thead>");
+            pw.println("            <tr>");
+            pw.println("                <th>VARIABLE</th>");
+            pw.println("                <th>TIPO</th>");
+            pw.println("                <th>VALOR</th>");
+            pw.println("            </tr>");
+            pw.println("        </thead>");
+            pw.println("        <tbody>");
+            for (TablaSimbolos ts : tableSymbols) {
+                pw.println("            <tr>");
+                pw.println("                <td>" + ts.getVariables() + "</td>");
+                pw.println("                <td>" + ts.getTipos() + "</td>");
+                pw.println("                <td>" + ts.getVariables() + "</td>");
+                pw.println("            </tr>");
+            }
+            pw.println("        </tbody>");
+            pw.println("    </table>");
+            pw.println("</body>");
+            pw.println("</html>");
+            Desktop.getDesktop().open(new File(path));
+            
+            
+        } catch (Exception e) {
+        } finally {
+            if (fichero != null) {
+                fichero.close();
+            }
+        }
+        try {
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
     public static void CrearCss(){
         FileWriter fichero = null;
         PrintWriter cs = null;
@@ -601,13 +642,10 @@ public class Ventana extends javax.swing.JFrame {
     private javax.swing.JTextPane TextEntrada;
     private javax.swing.JButton buttonEjecutar;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
     private javax.swing.JMenuBar jMenuBar2;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTabbedPane nuevoTabbedPane;

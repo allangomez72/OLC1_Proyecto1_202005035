@@ -6,6 +6,7 @@ import Metodos.OperacionesAritmeticas;
 import Metodos.Mapas;
 import Metodos.OperacionesEstadisticas;
 import Metodos.Graficas;
+import Metodos.TablaSimbolos;
 import java.util.ArrayList;
 
 parser code 
@@ -15,12 +16,21 @@ parser code
     //lista de errores
     public ArrayList<Exception_> Errores = new ArrayList();
     
+    public ArrayList<TablaSimbolos> ts = new ArrayList();
     /**
      * Método al que se llama automáticamente ante algún error sintactico.
     **/ 
     public void syntax_error(Symbol s){
         Errores.add(new Exception_("Sintáctico", "Error de sintaxis detectado. Se detectó: " + s.value, s.left + "", s.right + ""));
     }
+
+    public String variable = "";
+    public Object valor = null;
+    public String tipo = "";
+
+        public void agregar(){
+        ts.add(new TablaSimbolos(variable,valor,tipo));
+        }
     /**
      * Método al que se llama automáticamente ante algún error sintáctico 
      * en el que ya no es posible una recuperación de errores.
@@ -31,6 +41,11 @@ parser code
 
     public ArrayList<Exception_> getErrores(){
         return Errores;
+        
+    }
+
+    public ArrayList<TablaSimbolos> getTs(){
+        return ts;
     }
         //esto es para la grafica de Barras
         public String title = "";
@@ -44,6 +59,8 @@ parser code
         public ArrayList<Object> labels = new ArrayList<>();
 
         //esto es para la grafica de Line es igual que la de barras xD
+
+
 
 :}
 
@@ -79,7 +96,10 @@ SENTENCE ::= STATEMENT_VARIABLES
 
 
 STATEMENT_VARIABLES ::=  VAR DOSPUNTOS TYPE_VAR  DOSPUNTOS DOSPUNTOS ID:itentifier FLECHA EXPRESSION:value_ END PUNTOCOMA
-        {:
+        {:      
+                variable = itentifier.toString();
+                valor = value_;
+                agregar();
                 Object value = null;
                 if (value_ instanceof String) {
                     value = value_.toString(); // Convertir a cadena explícitamente
@@ -97,10 +117,12 @@ TYPE_VAR ::= TYPE CORABRE CORCIERRA
 TYPE ::= CHAR
         {:
                 System.out.println("Tipo de dato char");
+                tipo = "char";
         :}
         | DOUBLE 
         {:
                 System.out.println("Tipo de dato double");
+                tipo = "double";
         :};
 
 EXPRESSION ::= DECIMAL:deci {: RESULT = deci; :}
@@ -197,6 +219,9 @@ CONCATENATION ::= EXPRESSION:exp COMA CONCATENATION:conca
 
 ARREGLO_DECLARATION ::= ARREGLO DOSPUNTOS ARREGLO_TYPE DOSPUNTOS DOSPUNTOS ARROBA ID:id FLECHA CORABRE LIST_VALUES:list CORCIERRA END PUNTOCOMA
         {:
+                variable = id.toString();
+                valor = list;
+                agregar();
             Mapas.setArreglo(id.toString(),(ArrayList<Object>) list);
             System.out.println("Arreglo declarado: " + id + " con valores: " + list);
         :};

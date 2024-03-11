@@ -11,6 +11,7 @@ import Metodos.OperacionesAritmeticas;
 import Metodos.Mapas;
 import Metodos.OperacionesEstadisticas;
 import Metodos.Graficas;
+import Metodos.TablaSimbolos;
 import java.util.ArrayList;
 import java_cup.runtime.XMLElement;
 
@@ -356,12 +357,21 @@ public class parser extends java_cup.runtime.lr_parser {
     //lista de errores
     public ArrayList<Exception_> Errores = new ArrayList();
     
+    public ArrayList<TablaSimbolos> ts = new ArrayList();
     /**
      * Método al que se llama automáticamente ante algún error sintactico.
     **/ 
     public void syntax_error(Symbol s){
         Errores.add(new Exception_("Sintáctico", "Error de sintaxis detectado. Se detectó: " + s.value, s.left + "", s.right + ""));
     }
+
+    public String variable = "";
+    public Object valor = null;
+    public String tipo = "";
+
+        public void agregar(){
+        ts.add(new TablaSimbolos(variable,valor,tipo));
+        }
     /**
      * Método al que se llama automáticamente ante algún error sintáctico 
      * en el que ya no es posible una recuperación de errores.
@@ -372,6 +382,11 @@ public class parser extends java_cup.runtime.lr_parser {
 
     public ArrayList<Exception_> getErrores(){
         return Errores;
+        
+    }
+
+    public ArrayList<TablaSimbolos> getTs(){
+        return ts;
     }
         //esto es para la grafica de Barras
         public String title = "";
@@ -385,6 +400,8 @@ public class parser extends java_cup.runtime.lr_parser {
         public ArrayList<Object> labels = new ArrayList<>();
 
         //esto es para la grafica de Line es igual que la de barras xD
+
+
 
 
 
@@ -526,7 +543,10 @@ class CUP$parser$actions {
 		int value_left = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
 		int value_right = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
 		Object value_ = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
-		
+		      
+                variable = itentifier.toString();
+                valor = value_;
+                agregar();
                 Object value = null;
                 if (value_ instanceof String) {
                     value = value_.toString(); // Convertir a cadena explícitamente
@@ -564,6 +584,7 @@ class CUP$parser$actions {
               Object RESULT =null;
 		
                 System.out.println("Tipo de dato char");
+                tipo = "char";
         
               CUP$parser$result = parser.getSymbolFactory().newSymbol("TYPE",5, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -575,6 +596,7 @@ class CUP$parser$actions {
               Object RESULT =null;
 		
                 System.out.println("Tipo de dato double");
+                tipo = "double";
         
               CUP$parser$result = parser.getSymbolFactory().newSymbol("TYPE",5, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -870,6 +892,9 @@ class CUP$parser$actions {
 		int listright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)).right;
 		Object list = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-3)).value;
 		
+                variable = id.toString();
+                valor = list;
+                agregar();
             Mapas.setArreglo(id.toString(),(ArrayList<Object>) list);
             System.out.println("Arreglo declarado: " + id + " con valores: " + list);
         
