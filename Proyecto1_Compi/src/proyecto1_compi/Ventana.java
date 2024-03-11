@@ -13,6 +13,11 @@ import java.io.BufferedReader;
 import java.io.StringReader;
 import Errores.Exception_;
 import java.util.ArrayList;
+import java.awt.Desktop;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.logging.Level;
 
 import Metodos.Graficas;
 import Metodos.Mapas;
@@ -20,6 +25,7 @@ import Metodos.Recorrido;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
@@ -43,7 +49,8 @@ public class Ventana extends javax.swing.JFrame {
     public Ventana() {
         initComponents();
     }
-        public String AbrirArchivo(File archivo) {
+
+    public String AbrirArchivo(File archivo) {
         String contenido = "";
         try {
             entrada = new FileInputStream(archivo);
@@ -241,9 +248,19 @@ public class Ventana extends javax.swing.JFrame {
         ReportesMenu.setText("Reportes");
 
         ButtonTokens.setText("Reporte de Tokens");
+        ButtonTokens.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ButtonTokensActionPerformed(evt);
+            }
+        });
         ReportesMenu.add(ButtonTokens);
 
         ButtonErrores.setText("Reporte de Errores");
+        ButtonErrores.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ButtonErroresActionPerformed(evt);
+            }
+        });
         ReportesMenu.add(ButtonErrores);
 
         ButtonTS.setText("Reporte Tabla de Simbolos");
@@ -301,19 +318,14 @@ public class Ventana extends javax.swing.JFrame {
             errores.addAll(parse.getErrores());
             tokens.addAll(scan.Lexemas);
             System.out.println("------------------------------------\n\n");
-            //Mapas.mostrarTodosLosArreglos();
-            //graficas.mostrarGraficas();
+
 
             String result = "";
             for (int i = 0; i < parse.salidas.size(); i++) {
                 result += parse.salidas.get(i) + '\n';
             }
             ConsolaSalida.setText(result);
-
-            // SalidaText.setText("Analisis realizado correcatamente");
-            // System.out.println("Analisis realizado correctamente");
-            ConsolaSalida.setEditable(false);
-            // generar reportes de errores lexicos
+             ConsolaSalida.setEditable(false);
 
         } catch (Exception ex) {
             System.out.println("Error: " + ex.getMessage());
@@ -356,6 +368,25 @@ public class Ventana extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_ComoButtonActionPerformed
 
+    private void ButtonTokensActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ButtonTokensActionPerformed
+         try {
+            // TODO add your handling code here:
+            generarReporteHTML2(tokens);
+            CrearCss();
+        } catch (IOException ex) {
+            Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_ButtonTokensActionPerformed
+
+    private void ButtonErroresActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ButtonErroresActionPerformed
+        try {
+            generarReporteHTML(errores);
+            CrearCss();
+        } catch (IOException ex) {
+            Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_ButtonErroresActionPerformed
+
         private void abrirNuevoTab() {
         JTabbedPane nuevoTabbedPane = new JTabbedPane();
         JTextPane nuevoTextPane = new JTextPane();
@@ -378,6 +409,182 @@ public class Ventana extends javax.swing.JFrame {
         jPanel1.revalidate();
         jPanel1.repaint();
     }
+    
+     public static void generarReporteHTML(ArrayList<Exception_> errores) throws IOException {
+        FileWriter fichero = null;
+        PrintWriter pw = null;
+        try {
+            
+            String path = "Reportes/Reporteerrores.html";
+            fichero = new FileWriter(path);
+            pw = new PrintWriter(fichero);
+            
+            //Comenzamos a escribir el html
+            pw.println("<!DOCTYPE html>");
+            pw.println("<html lang=\"es\">");
+            pw.println("<head>");
+            pw.println("    <meta charset=\"UTF-8\">");
+            pw.println("    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">");
+            pw.println("    <title>Reporte de Errores</title>");
+            pw.println("    <link rel=\"stylesheet\" href=\"style.css\">");
+            pw.println("</head>");
+            pw.println("<body>");
+            pw.println("    <h1>REPORTE DE ERRORES</h1>");
+            pw.println("    <table>");
+            pw.println("        <thead>");
+            pw.println("            <tr>");
+            pw.println("                <th>ERROR</th>");
+            pw.println("                <th>DESCRIPCIÓN</th>");
+            pw.println("                <th>FILA</th>");
+            pw.println("                <th>COLUMNA</th>");
+            pw.println("            </tr>");
+            pw.println("        </thead>");
+            pw.println("        <tbody>");
+            for (Exception_ err : errores) {
+                pw.println("            <tr>");
+                pw.println("                <td>" + err.getTipo() + "</td>");
+                pw.println("                <td>" + err.getDescripcion() + "</td>");
+                pw.println("                <td>" + err.getLinea() + "</td>");
+                pw.println("                <td>" + err.getColumna() + "</td>");
+                pw.println("            </tr>");
+            }
+            pw.println("        </tbody>");
+            pw.println("    </table>");
+            pw.println("</body>");
+            pw.println("</html>");
+            Desktop.getDesktop().open(new File(path));
+            
+            
+        } catch (Exception e) {
+        } finally {
+            if (fichero != null) {
+                fichero.close();
+            }
+        }
+        try {
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public static void generarReporteHTML2(ArrayList<Recorrido> tokens) throws IOException {
+        FileWriter fichero = null;
+        PrintWriter pw = null;
+        try {
+            
+            String path = "Reportes/ReporteTokens.html";
+            fichero = new FileWriter(path);
+            pw = new PrintWriter(fichero);
+            
+            //Comenzamos a escribir el html
+            pw.println("<!DOCTYPE html>");
+            pw.println("<html lang=\"es\">");
+            pw.println("<head>");
+            pw.println("    <meta charset=\"UTF-8\">");
+            pw.println("    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">");
+            pw.println("    <title>Reporte de Tokens</title>");
+            pw.println("    <link rel=\"stylesheet\" href=\"style.css\">");
+            pw.println("</head>");
+            pw.println("<body>");
+            pw.println("    <h1>REPORTE DE TOKENS</h1>");
+            pw.println("    <table>");
+            pw.println("        <thead>");
+            pw.println("            <tr>");
+            pw.println("                <th>DESCRIPCION</th>");
+            pw.println("                <th>TOKEN</th>");
+            pw.println("                <th>FILA</th>");
+            pw.println("                <th>COLUMNA</th>");
+            pw.println("            </tr>");
+            pw.println("        </thead>");
+            pw.println("        <tbody>");
+            for (Recorrido err : tokens) {
+                pw.println("            <tr>");
+                pw.println("                <td>" + err.getLexema() + "</td>");
+                pw.println("                <td>" + err.getToken() + "</td>");
+                pw.println("                <td>" + err.getLinea() + "</td>");
+                pw.println("                <td>" + err.getColumna() + "</td>");
+                pw.println("            </tr>");
+            }
+            pw.println("        </tbody>");
+            pw.println("    </table>");
+            pw.println("</body>");
+            pw.println("</html>");
+            Desktop.getDesktop().open(new File(path));
+            
+            
+        } catch (Exception e) {
+        } finally {
+            if (fichero != null) {
+                fichero.close();
+            }
+        }
+        try {
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public static void CrearCss(){
+        FileWriter fichero = null;
+        PrintWriter cs = null;
+        try {
+            String path = "Reportes/style.css";
+            fichero = new FileWriter(path);
+            cs = new PrintWriter(fichero);
+
+            // Agrega el código CSS al archivo
+            cs.println("body {");
+            cs.println("    font-family: Arial, sans-serif;");
+            cs.println("    background-color: #f4f4f4;");
+            cs.println("    text-align: center;");
+            cs.println("}");
+            cs.println();
+            cs.println("h1 {");
+            cs.println("    color: #333;");
+            cs.println("    margin-top: 20px;");
+            cs.println("}");
+            cs.println();
+            cs.println("table {");
+            cs.println("    margin: 20px auto;");
+            cs.println("    border-collapse: collapse;");
+            cs.println("    width: 80%;");
+            cs.println("}");
+            cs.println();
+            cs.println("th, td {");
+            cs.println("    padding: 10px 15px;");
+            cs.println("    text-align: left;");
+            cs.println("    border-bottom: 1px solid #ddd;");
+            cs.println("}");
+            cs.println();
+            cs.println("th {");
+            cs.println("    background-color: #333;");
+            cs.println("    color: #fff;");
+            cs.println("}");
+            cs.println();
+            cs.println("tr:nth-child(even) {");
+            cs.println("    background-color: #f2f2f2;");
+            cs.println("}");
+
+
+            System.out.println("El archivo Style.css se ha creado con éxito.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (cs != null) {
+                cs.close();
+            }
+            if (fichero != null) {
+                try {
+                    fichero.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem AbrirButton;
